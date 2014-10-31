@@ -3,7 +3,7 @@ package ArangoDB2;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use URI;
 
@@ -124,7 +124,7 @@ $document->patch({foo => bar});
 
 =head1 DESCRIPTION
 
-ArangoDB2 provides an interface to the ArangoDB2 database.
+ArangoDB2 provides an interface to the ArangoDB database.
 
 The Collection and Document APIs are 100% implemented, with the exception of
 support for ETag based conditional operations.
@@ -169,4 +169,3 @@ This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
 =cut
-

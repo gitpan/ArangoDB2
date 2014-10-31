@@ -18,5 +18,9 @@ no_index:
     - t
     - inc
 requires:
+  Data::Dumper: 0
+  JSON::XS: 0
+  LWP::UserAgent: 0
+  Scalar::Util: 0
   perl: 5.006
-version: 0.01
+version: 0.02

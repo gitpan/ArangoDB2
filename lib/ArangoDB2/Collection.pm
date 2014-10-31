@@ -11,6 +11,7 @@ use Data::Dumper;
 use JSON::XS;
 
 use ArangoDB2::Document;
+use ArangoDB2::Edge;
 
 my $JSON = JSON::XS->new->utf8;
 
@@ -29,7 +30,7 @@ sub checksum
     my($self, $args) = @_;
 
     return $self->arango->http->get(
-        $self->db_path . '/_api/collection/' . $self->name . '/checksum',
+        $self->api_path('collection', $self->name, 'checksum'),
         $args,
     );
 }
@@ -42,7 +43,7 @@ sub count
     my($self) = @_;
 
     return $self->arango->http->get(
-        $self->db_path . '/_api/collection/' . $self->name . '/count'
+        $self->api_path('collection', $self->name, 'count'),
     );
 }
 
@@ -60,8 +61,14 @@ sub create
     # set name arg
     $args->{name} = $self->name;
 
+    # allow type to be passed by name
+    if ($args->{type}) {
+        $args->{type} = 3 if $args->{type} =~ m{edge}i;
+        $args->{type} = 2 if $args->{type} =~ m{doc}i;
+    }
+
     return $self->arango->http->post(
-        $self->db_path . '/_api/collection',
+        $self->api_path('collection'),
         undef,
         $JSON->encode($args),
     );
@@ -75,19 +82,19 @@ sub delete
     my($self) = @_;
 
     return $self->arango->http->delete(
-        $self->db_path . '/_api/collection/' . $self->name
+        $self->api_path('collection', $self->name),
     );
 }
 
 # document
 #
-# get a specific ArangoDB2::Document by handle or create a
+# get a specific ArangoDB2::Document by name (_key) or create a
 # new blank ArangoDB2::Document
 sub document
 {
     my($self, $name) = @_;
 
-    # if name (document _id) is passed then instantiate a new
+    # if name (_key) is passed then instantiate a new
     # object with that name, which will retrieve the object
     if (defined $name) {
         return $self->documents->{$name} ||= ArangoDB2::Document->new(
@@ -110,8 +117,42 @@ sub document
 
 # documents
 #
-#
+# register of ArangoDB2::Document objects by name (_key)
 sub documents { $_[0]->{documents} ||= {} }
+
+# edge
+#
+# get a specific ArangoDB2::Edge by name (_key) or create a
+# new blank ArangoDB2::Edge
+sub edge
+{
+    my($self, $name) = @_;
+
+    # if name (_key) is passed then instantiate a new
+    # object with that name, which will retrieve the object
+    if (defined $name) {
+        return $self->edges->{$name} ||= ArangoDB2::Edge->new(
+            $self->arango,
+            $self->database,
+            $self,
+            $name,
+        );
+    }
+    # otherwise create a new empty document that can be used to
+    # create a new document
+    else {
+        return ArangoDB2::Edge->new(
+            $self->arango,
+            $self->database,
+            $self,
+        );
+    }
+}
+
+# edges
+#
+# register of ArangoDB2::Edge objects by name (_key)
+sub edges { $_[0]->{edges} ||= {} }
 
 # figures
 #
@@ -121,7 +162,7 @@ sub figures
     my($self) = @_;
 
     return $self->arango->http->get(
-        $self->db_path . '/_api/collection/' . $self->name . '/figures'
+        $self->api_path('collection', $self->name, 'figures'),
     );
 }
 
@@ -133,7 +174,7 @@ sub info
     my($self) = @_;
 
     return $self->arango->http->get(
-        $self->db_path . '/_api/collection/' . $self->name
+        $self->api_path('collection', $self->name),
     );
 }
 
@@ -149,7 +190,7 @@ sub list
     my($self, $args) = @_;
 
     return $self->arango->http->get(
-        $self->db_path . '/_api/collection',
+        $self->api_path('collection'),
         $args,
     );
 }
@@ -166,7 +207,7 @@ sub load
     my($self, $args) = @_;
 
     return $self->arango->http->put(
-        $self->db_path . '/_api/collection/' . $self->name . '/load',
+        $self->api_path('collection', $self->name, 'load'),
         $args,
     );
 }
@@ -188,7 +229,7 @@ sub properties
 {
     my($self, $args) = @_;
 
-    my $path = $self->db_path . '/_api/collection/' . $self->name . '/properties';
+    my $path = $self->api_path('collection', $self->name, 'properties');
 
     # need to use true / false bool values
     if ( $args && exists $args->{waitForSync} ) {
@@ -196,7 +237,9 @@ sub properties
     }
 
     return $args
+        # if args are passed then set with PUT
         ? $self->arango->http->put($path, undef, $JSON->encode($args))
+        # otherwise get properties
         : $self->arango->http->get($path);
 }
 
@@ -215,7 +258,7 @@ sub rename
     my $new_name = $args->{name};
 
     my $res = $self->arango->http->put(
-        $self->db_path . '/_api/collection/' . $self->name . '/rename',
+        $self->api_path('collection', $self->name, 'rename'),
         undef,
         $JSON->encode($args),
     );
@@ -241,7 +284,7 @@ sub revision
     my($self) = @_;
 
     return $self->arango->http->get(
-        $self->db_path . '/_api/collection/' . $self->name . '/revision'
+        $self->api_path('collection', $self->name, 'revision'),
     );
 }
 
@@ -253,7 +296,7 @@ sub rotate
     my($self) = @_;
 
     return $self->arango->http->put(
-        $self->db_path . '/_api/collection/' . $self->name . '/rotate',
+        $self->api_path('collection', $self->name, 'rotate'),
     );
 }
 
@@ -265,7 +308,7 @@ sub truncate
     my($self) = @_;
 
     return $self->arango->http->put(
-        $self->db_path . '/_api/collection/' . $self->name . '/truncate'
+        $self->api_path('collection', $self->name, 'truncate'),
     );
 }
 
@@ -277,7 +320,7 @@ sub unload
     my($self) = @_;
 
     return $self->arango->http->put(
-        $self->db_path . '/_api/collection/' . $self->name . '/unload'
+        $self->api_path('collection', $self->name, 'unload'),
     );
 }
 
@@ -307,6 +350,10 @@ ArangoDB2::Collection - ArangoDB2 collection API methods
 =item document
 
 =item documents
+
+=item edge
+
+=item edges
 
 =item figures
 
@@ -344,4 +391,3 @@ This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
 =cut
-
