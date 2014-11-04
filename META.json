@@ -1,5 +1,5 @@
 {
-   "abstract" : "ArangoDB HTTP API Interface",
+   "abstract" : "ArangoDB 2.x HTTP API Interface",
    "author" : [
       "Ersun Warncke <ersun.warncke@outlook.com>"
    ],
@@ -41,5 +41,5 @@
       }
    },
    "release_status" : "stable",
-   "version" : "0.06"
+   "version" : "0.07"
 }

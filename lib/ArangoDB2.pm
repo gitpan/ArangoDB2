@@ -3,7 +3,7 @@ package ArangoDB2;
 use strict;
 use warnings;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 use URI;
 
@@ -113,7 +113,7 @@ __END__
 
 =head1 NAME
 
-ArangoDB2 - ArangoDB HTTP API Interface
+ArangoDB2 - ArangoDB 2.x HTTP API Interface
 
 =head1 SYNOPSIS
 
