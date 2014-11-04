@@ -3,7 +3,7 @@ package ArangoDB2;
 use strict;
 use warnings;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 use URI;
 
@@ -101,6 +101,11 @@ sub version
 
     return $self->http->get('/_api/version');
 }
+
+# _class
+#
+# internal name for class
+sub _class { 'arango' }
 
 1;
 
