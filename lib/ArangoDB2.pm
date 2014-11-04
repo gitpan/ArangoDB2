@@ -3,7 +3,7 @@ package ArangoDB2;
 use strict;
 use warnings;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 use URI;
 
@@ -113,20 +113,20 @@ __END__
 
 =head1 NAME
 
-ArangoDB2 - ArangoDB2 HTTP API Interface
+ArangoDB2 - ArangoDB HTTP API Interface
 
 =head1 SYNOPSIS
 
-my $arango = ArangoDB2->new("http://localhost:8259");
+    my $arango = ArangoDB2->new("http://localhost:8259");
 
-my $database = $arango->database("test");
-my $collection = $database->collection("test");
-my $document = $collection->document();
+    my $database = $arango->database("test");
+    my $collection = $database->collection("test");
+    my $document = $collection->document();
 
-# create a new document
-$document->create({hello => world});
-# update existing document
-$document->patch({foo => bar});
+    # create a new document
+    $document->create({hello => world});
+    # update existing document
+    $document->patch({foo => bar});
 
 =head1 DESCRIPTION
 

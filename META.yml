@@ -1,5 +1,5 @@
 ---
-abstract: 'ArangoDB2 HTTP API Interface'
+abstract: 'ArangoDB HTTP API Interface'
 author:
   - 'Ersun Warncke <ersun.warncke@outlook.com>'
 build_requires:
@@ -23,4 +23,4 @@ requires:
   LWP::UserAgent: 0
   Scalar::Util: 0
   perl: 5.006
-version: 0.05
+version: 0.06
