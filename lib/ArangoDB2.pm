@@ -7,7 +7,7 @@ use base qw(
     ArangoDB2::Base
 );
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 use URI;
 
@@ -90,6 +90,21 @@ sub http
     return $self->{http} ||= ArangoDB2::HTTP->new($self);
 }
 
+# http_client
+#
+# set string indicating http client to use
+sub http_client {
+    my($self) = shift;
+    # get/set http client value
+    my $http_client = $self->_get_set('http_client', @_)
+        or return;
+    # flush current http client instance so that it will be
+    # re-created using the correct client
+    $self->{http} = undef;
+
+    return $http_client;
+}
+
 # uri
 #
 # get/set URI for API
@@ -166,6 +181,7 @@ Most of the API surface is implemented with the exception of:
     Bulk Imports
     Batch Requests
     Sharding
+    Simple Queries
 
 The use of ETags to control modification operations has not been implemented.
 
@@ -244,6 +260,11 @@ insure that bool parameters have properly encoded JSON true and false values.
 =item endpoint
 
 =item http
+
+=item http_client
+
+Get/set string indicating which HTTP backend to use.  Currently supported values are 'lwp' and
+'curl'.  Using curl requires L<WWW::Curl>, which will be used by default if it is installed.
 
 =back
 
